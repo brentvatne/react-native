@@ -17,6 +17,7 @@ var Animated = require('Animated');
 var Easing = require('Easing');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+var Platform = require('Platform');
 var PropTypes = require('prop-types');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
@@ -166,15 +167,28 @@ var TouchableOpacity = createReactClass({
    * Animate the touchable to a new opacity.
    */
   setOpacityTo: function(value: number, duration: number) {
-    Animated.timing(
-      this.state.anim,
-      {
-        toValue: value,
-        duration: duration,
-        easing: Easing.inOut(Easing.quad),
-        useNativeDriver: true,
-      }
-    ).start();
+    if (Platform.OS === 'ios') {
+      Animated.spring(
+        this.state.anim,
+        {
+          stiffness: 1000,
+          damping: 500,
+          mass: 3,
+          toValue: value,
+          useNativeDriver: true,
+        }
+      ).start();
+    } else {
+      Animated.timing(
+        this.state.anim,
+        {
+          toValue: value,
+          duration: duration,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }
+      ).start();
+    }
   },
 
   /**
